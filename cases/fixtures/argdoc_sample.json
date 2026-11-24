@@ -1,0 +1,79 @@
+{
+  "_comment": "fixture：一份完整的 ArgDoc（个股场景）。C 用它开发 adapt/*，A 用它开发 eval/*，不用等 B 的 agent。",
+  "task": "stock_outlook",
+  "code": "600519",
+  "as_of": "2025-01-04",
+  "horizon": "4w",
+  "stance": "mildly_positive",
+  "confidence": 0.62,
+  "claims": [
+    {
+      "id": "c1",
+      "type": "fact",
+      "text": "2024 年前三季度营业总收入 1231.2 亿元，同比增长 12.0%；归母净利润 608.3 亿元。",
+      "evidence": ["e1"]
+    },
+    {
+      "id": "c2",
+      "type": "fact",
+      "text": "第三季度单季营收增速较上半年回落约 3 个百分点。",
+      "evidence": ["e2"]
+    },
+    {
+      "id": "c3",
+      "type": "inference",
+      "text": "增速回落但仍为正，且毛利率未明显下滑，基本面尚属稳健，但超预期空间收窄。",
+      "evidence": ["e1", "e2"]
+    },
+    {
+      "id": "c4",
+      "type": "inference",
+      "text": "当前市盈率 22 倍高于其近五年中位数，价格中已包含较高预期。",
+      "evidence": ["e3"]
+    }
+  ],
+  "counter_arguments": [
+    "若第四季度为春节备货旺季，单季增速可能回升，回落可能是季节性而非趋势。",
+    "高端白酒提价周期若重启，毛利率仍有扩张空间，当前估值可能并不算高。"
+  ],
+  "invalidation_conditions": [
+    "下个季度（2024Q4）营收同比增速掉到 5% 以下。",
+    "渠道库存（预收款/合同负债）连续两个季度下降超过 15%。"
+  ],
+  "information_gaps": [
+    "缺少经销商层面的库存与批价数据，无法验证渠道是否积压。"
+  ],
+  "explanation_status": "not_applicable",
+  "evidence": [
+    {
+      "id": "e1",
+      "source": "贵州茅台:2024年第三季度报告",
+      "doc_type": "announcement",
+      "publish_time": "2024-10-26",
+      "quote": "年初至报告期末实现营业总收入 123,120,000,000 元，同比增长 12.0%",
+      "url": "https://data.eastmoney.com/notices/detail/600519/AN202410261234567890.html"
+    },
+    {
+      "id": "e2",
+      "source": "2024Q3 财务指标（东财数据中心）",
+      "doc_type": "market_data",
+      "publish_time": "2024-10-26",
+      "quote": "REPORT_DATE=2024-09-30, NOTICE_DATE=2024-10-26, PARENT_NETPROFIT=60830000000",
+      "url": ""
+    },
+    {
+      "id": "e3",
+      "source": "自算估值：qfq 收盘价 × 总股本 / 年化净利润",
+      "doc_type": "market_data",
+      "publish_time": "2025-01-03",
+      "quote": "PE=22.0, PB=7.19, 报告期=2024Q3",
+      "url": ""
+    }
+  ],
+  "audit": {
+    "run_id": "fixture-0001",
+    "debate_rounds": 1,
+    "evidence_count": 3,
+    "dropped_claims": 0
+  }
+}

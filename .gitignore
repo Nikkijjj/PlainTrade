@@ -1,0 +1,16 @@
+__pycache__/
+*.py[cod]
+.venv/
+.env
+data_files/*.db
+data_files/*.db-*
+data_files/raw/
+logs/
+results/
+.streamlit/secrets.toml
+data_files/charts/
+.pytest_cache/
+build/
+dist/
+*.spec
+_*.py

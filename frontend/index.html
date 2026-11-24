@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>PlainTrade · 帮你看懂市场</title>
+<style>
+  :root{
+    --navy:#1F3B63; --navy-2:#2f5588; --ink:#14181d; --ink-2:#3c444e;
+    --muted:#8b93a1; --bg:#fbfbfc; --line:#e8eaee; --bubble:#eef3fa;
+    --up:#c0392b; --down:#0f7b3f; --warn-bg:#fff8e6; --warn:#8a6a00;
+    --font:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%;margin:0}
+  body{background:var(--bg);color:var(--ink);font-family:var(--font);font-size:15.5px;line-height:1.75}
+  .app{display:flex;flex-direction:column;height:100dvh}
+  header{flex:none;display:flex;align-items:center;gap:10px;padding:12px 18px;
+    border-bottom:1px solid var(--line);background:rgba(251,251,252,.92)}
+  .brand{font-weight:800;color:var(--navy);font-size:15.5px}
+  .brand span{font-weight:500;color:var(--muted);font-size:12.5px;margin-left:7px}
+  .mode{margin-left:auto;font-size:12px;color:var(--muted);display:flex;gap:12px;align-items:center}
+  .badge{border:1px solid var(--line);border-radius:999px;padding:3px 10px;background:#fff}
+  .thread{flex:1;overflow-y:auto}
+  .inner{max-width:720px;margin:0 auto;padding:26px 20px 10px}
+  .msg{display:flex;margin-bottom:22px}
+  .msg.user{justify-content:flex-end}
+  .msg.user .body{background:var(--bubble);border-radius:16px 16px 4px 16px;padding:10px 15px;max-width:82%}
+  .msg.ai .body{max-width:100%}
+  .who{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--muted);margin-bottom:7px}
+  .dot{width:16px;height:16px;border-radius:50%;background:var(--navy);display:inline-grid;
+    place-items:center;color:#fff;font-size:9px;font-weight:700}
+  p{margin:0 0 12px}
+  p:last-child{margin-bottom:0}
+  .lead{font-size:16.5px;font-weight:600;line-height:1.6}
+  .conf{display:inline-flex;align-items:baseline;gap:8px;background:#fff;border:1px solid var(--line);
+    border-radius:999px;padding:5px 13px;font-size:14px;margin-top:6px}
+  .conf b{color:var(--navy)}
+  .anchor{display:block;font-size:12.5px;color:var(--muted);margin-top:6px}
+  .why{margin-top:14px;border-top:1px solid var(--line);padding-top:12px}
+  .why-item{display:flex;gap:10px;padding:7px 0;border-bottom:1px dashed var(--line)}
+  .why-item:last-child{border-bottom:0}
+  .idx{flex:none;width:20px;height:20px;border-radius:6px;background:#eef3fa;color:var(--navy);
+    font-size:11.5px;font-weight:700;display:grid;place-items:center;margin-top:3px}
+  .fig{margin:16px 0 18px}
+  .fig img{display:block;width:100%;height:auto;border:1px solid var(--line);border-radius:12px}
+  .cap{margin-top:9px;font-size:13.5px;color:var(--ink-2);line-height:1.6;
+    padding-left:9px;border-left:2px solid var(--navy)}
+  .nochart{border:1px dashed #cbd2de;border-radius:12px;padding:22px 18px;text-align:center;
+    background:#fcfcfd;color:var(--muted)}
+  .nochart .big{font-size:15px;color:var(--ink);font-weight:600;margin-bottom:6px}
+  .mind{margin-top:14px;font-size:14.5px}
+  .mind b{color:var(--navy)}
+  .cites{margin-top:14px}
+  .cites-btn{border:0;background:none;padding:0;font-family:inherit;font-size:13px;
+    color:var(--muted);cursor:pointer}
+  .cites-btn:hover{color:var(--navy)}
+  .cites-list{display:none;margin-top:10px;border-top:1px solid var(--line);padding-top:8px}
+  .cites-list.open{display:block}
+  .cite{padding:6px 0;border-bottom:1px dashed var(--line);font-size:13px;color:var(--ink-2)}
+  .cite:last-child{border-bottom:0}
+  abbr{border-bottom:1.5px dotted var(--navy-2);color:var(--navy);font-weight:600;
+    cursor:help;text-decoration:none}
+  .skip-note{margin-top:10px;font-size:13px;color:var(--muted)}
+  .err{background:#fef2f2;border:1px solid #fbd5d5;color:#b91c1c;border-radius:10px;
+    padding:10px 13px;font-size:13.5px}
+  footer{flex:none;padding:0 20px 14px;background:linear-gradient(180deg,rgba(251,251,252,0),var(--bg) 26%)}
+  .composer{max-width:720px;margin:0 auto}
+  .chips{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}
+  .chip{border:1px solid var(--line);background:#fff;color:var(--ink-2);cursor:pointer;
+    font-family:inherit;font-size:13px;padding:6px 12px;border-radius:999px}
+  .chip:hover{border-color:#c3d4e8;background:#f7fafd;color:var(--navy)}
+  .box{display:flex;align-items:flex-end;gap:9px;background:#fff;border:1px solid #dde2ea;
+    border-radius:16px;padding:9px 9px 9px 15px}
+  textarea{flex:1;border:0;outline:0;resize:none;font-family:inherit;font-size:15px;
+    line-height:1.6;max-height:140px;padding:6px 0;background:transparent}
+  .send{flex:none;width:34px;height:34px;border-radius:10px;border:0;cursor:pointer;
+    background:var(--navy);color:#fff;font-size:15px}
+  .send:disabled{background:#c9d0da;cursor:default}
+  .tiny{max-width:720px;margin:8px auto 0;text-align:center;font-size:11.5px;color:#aab1bd}
+  .thinking{display:flex;align-items:center;gap:9px;color:var(--muted);font-size:13.5px}
+  .dots{display:inline-flex;gap:4px}
+  .dots i{width:5px;height:5px;border-radius:50%;background:#b9c0cc;animation:blink 1.2s infinite}
+  .dots i:nth-child(2){animation-delay:.18s}.dots i:nth-child(3){animation-delay:.36s}
+  @keyframes blink{0%,80%,100%{opacity:.25}40%{opacity:1}}
+</style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <div class="brand">PlainTrade<span>帮你看懂市场，不替你决定</span></div>
+    <div class="mode">
+      <span class="badge" id="modeBadge">replay</span>
+      <span class="badge" id="asofBadge">as_of —</span>
+    </div>
+  </header>
+
+  <main class="thread" id="thread"><div class="inner" id="inner">
+    <div id="welcome" style="padding:40px 0;text-align:center">
+      <div style="font-size:22px;font-weight:700;margin-bottom:8px">想了解哪只股票，或者今天的市场？</div>
+      <div style="color:var(--muted);font-size:14.5px">直接问就行。我会给结论、给出依据，必要时配上图。</div>
+    </div>
+  </div></main>
+
+  <footer>
+    <div class="composer">
+      <div class="chips" id="chips">
+        <button class="chip" data-q="今天科技股跌这么多，怎么了？">今天科技股跌这么多，怎么了？</button>
+        <button class="chip" data-q="600519 这只怎么样？">600519 这只怎么样？</button>
+        <button class="chip" data-q="我手上有 10 万，该怎么分配？">我手上有 10 万，该怎么分配？</button>
+        <button class="chip" data-q="为什么今天会跌？">为什么今天会跌？</button>
+      </div>
+      <div class="box">
+        <textarea id="input" rows="1" placeholder="问点什么…"></textarea>
+        <button class="send" id="send" disabled>↑</button>
+      </div>
+      <div class="tiny">AI 生成内容可能有误，不构成投资建议</div>
+    </div>
+  </footer>
+</div>
+
+<script src="mock_images.js"></script>
+<script>
+"use strict";
+const $ = (s) => document.querySelector(s);
+const thread = $("#thread"), inner = $("#inner"), input = $("#input"), sendBtn = $("#send");
+const LIVE = location.protocol.startsWith("http");      // 双击打开 => 静态快照模式
+let busy = false;
+
+/* ── 演示快照：后端未就绪时也能看界面 ─────────────── */
+const MOCK = {
+  "今天科技股跌这么多，怎么了？": {
+    task: "market_event",
+    one_liner: "跌的不是你那一只。今天创业板指跌 5.2%，你所在的科技板块 9 成个股都在跌。",
+    stance_plain: "这次我们不猜原因",
+    confidence_plain: {value: "说不出高下", anchor: "证据互相打平，等于没结论"},
+    why: [
+      {point: "创业板指当日跌 5.2%，为近 12 个月最大单日跌幅。", evidence: ["e1"]},
+      {point: "成交额是近 20 日均值的 1.8 倍，属恐慌性放量。", evidence: ["e2"]}
+    ],
+    charts: [{spec: {decision: "emit", need_type: "attribution",
+                     caption: "六个板块全在跌，说明这不是某个行业的问题，是整体性的。"},
+              image_path: (window.__IMAGES__ || {}).bars || ""}],
+    what_would_change_our_mind: ["如果只有科技板块跌、其他板块平稳，那就不是系统性下跌。"],
+    what_you_should_not_do: ["不要因为跌得多就加仓——恐慌既不是买入理由，也不是卖出理由。"],
+    glossary: [{id: "t1", term: "创业板指", plain: "一批成长型公司组成的指数", analogy: "一个班的平均分"}],
+    citations: ["创业板指日线 · 2025-04-07 收盘：−5.2%",
+                "板块行情 · 2025-04-07：半导体 −6.8%、软件服务 −6.1%"]
+  },
+  "600519 这只怎么样？": {
+    task: "stock_outlook",
+    one_liner: "生意还在增长，但速度慢下来了，估值可能已经把较好的预期算进去了。",
+    stance_plain: "谨慎偏乐观",
+    confidence_plain: {value: "大概六成", anchor: "六成约等于抛硬币偏一点，不是「很确定」"},
+    why: [
+      {point: "最新一期营收比去年同期多 12%，增速比上季度回落 3 个百分点。", evidence: ["e1"]},
+      {point: "现在的价格里已经包含了很多人的期待（PE 22 倍）。", evidence: ["e2"]}
+    ],
+    charts: [{spec: {decision: "emit", need_type: "risk",
+                     caption: "过去一年它最多跌过 28%——这不是危言耸听，是真实发生过的。"},
+              image_path: (window.__IMAGES__ || {}).drawdown || ""}],
+    what_would_change_our_mind: ["下季度增速掉到 5% 以下", "渠道库存继续上升"],
+    what_you_should_not_do: ["这不是让你买或卖。想下单前先回答：这笔钱多久不用？"],
+    glossary: [{id: "t1", term: "估值", plain: "简单说就是贵不贵", analogy: "同样的铺子，租金越高回本越慢"}],
+    citations: ["2024 年年度报告 · 披露日 2025-03-11",
+                "资产负债表 · 2024Q3：净资产 4905 亿，PE 22.0 / PB 7.19"]
+  },
+  "为什么今天会跌？": {
+    task: "market_event",
+    one_liner: "查了当天的公告和新闻，没有找到能解释这次下跌的具体事件。",
+    stance_plain: "没有明确看法",
+    confidence_plain: {value: "没有明确看法", anchor: "证据不够，我们就不给方向"},
+    why: [
+      {point: "当天相关公司没有重大事项公告。", evidence: ["e1"]},
+      {point: "媒体报道给出三种互相矛盾的解释，均无官方确认。", evidence: ["e2"]}
+    ],
+    charts: [{spec: {decision: "skip", need_type: "no_attribution",
+                     reason: "归因状态为 unknown，出图会造成确定性错觉",
+                     caption: ""}, image_path: ""}],
+    what_would_change_our_mind: [],
+    what_you_should_not_do: ["不要在没弄清原因时因为恐慌而操作。"],
+    glossary: [],
+    citations: ["公告检索 · 当日无重大事项公告", "新闻检索 · 3 条报道给出 3 种解释"]
+  }
+};
+
+/* ── 渲染 ───────────────────────────────────────── */
+function esc(s) { return String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c])); }
+
+function withGlossary(text, glossary) {
+  let html = esc(text);
+  (glossary || []).forEach(g => {
+    const re = new RegExp(esc(g.term), "g");
+    html = html.replace(re, `<abbr title="${esc(g.plain)}${g.analogy ? "｜" + esc(g.analogy) : ""}">${esc(g.term)}</abbr>`);
+  });
+  return html;
+}
+
+function renderBrief(b) {
+  const g = b.glossary || [];
+  const parts = [];
+  parts.push(`<p class="lead">${withGlossary(b.one_liner, g)}</p>`);
+  parts.push(`<div><span style="font-size:15px;font-weight:700;color:var(--navy)">${esc(b.stance_plain)}</span>
+    <div class="conf"><span>把握程度</span><b>${esc(b.confidence_plain.value)}</b></div>
+    <span class="anchor">${esc(b.confidence_plain.anchor)}</span></div>`);
+
+  if ((b.why || []).length) {
+    parts.push('<div class="why">');
+    b.why.forEach((w, i) => {
+      parts.push(`<div class="why-item"><span class="idx">${i + 1}</span>
+        <div>${withGlossary(w.point, g)}</div></div>`);
+    });
+    parts.push("</div>");
+  }
+
+  (b.charts || []).forEach(c => {
+    const s = c.spec || {};
+    if (s.decision === "emit" && c.image_path) {
+      parts.push(`<div class="fig"><img src="${c.image_path}" alt="图表" />
+        ${s.caption ? `<div class="cap">${esc(s.caption)}</div>` : ""}</div>`);
+    } else {
+      parts.push(`<div class="nochart"><div class="big">这次不出图</div>
+        <div style="font-size:13px;max-width:420px;margin:0 auto">
+        原因不明时，任何走势图都会让你以为"已经知道发生了什么"。${s.reason ? "<br/>" + esc(s.reason) : ""}</div></div>`);
+    }
+  });
+
+  if ((b.what_would_change_our_mind || []).length) {
+    parts.push(`<div class="mind"><b>什么情况下我们会错</b><br/>` +
+      b.what_would_change_our_mind.map(x => "· " + esc(x)).join("<br/>") + "</div>");
+  }
+  if ((b.what_you_should_not_do || []).length) {
+    parts.push(`<div class="mind"><b>你不该做的事</b><br/>` +
+      b.what_you_should_not_do.map(x => "· " + esc(x)).join("<br/>") + "</div>");
+  }
+  if ((b.citations || []).length) {
+    parts.push(`<div class="cites"><button class="cites-btn">▸ ${b.citations.length} 条依据</button>
+      <div class="cites-list">${b.citations.map(c => `<div class="cite">${esc(c)}</div>`).join("")}</div></div>`);
+  }
+  return parts.join("");
+}
+
+function addUser(text) {
+  const d = document.createElement("div");
+  d.className = "msg user";
+  d.innerHTML = `<div class="body"></div>`;
+  d.querySelector(".body").textContent = text;
+  inner.appendChild(d); scrollDown();
+}
+
+function addThinking(label) {
+  const d = document.createElement("div");
+  d.className = "msg ai";
+  d.innerHTML = `<div class="body"><div class="who"><span class="dot">◆</span>PlainTrade</div>
+    <div class="thinking"><span class="dots"><i></i><i></i><i></i></span><span>${esc(label)}…</span></div></div>`;
+  inner.appendChild(d); scrollDown();
+  return d;
+}
+
+function addAssistant(brief) {
+  const d = document.createElement("div");
+  d.className = "msg ai";
+  d.innerHTML = `<div class="body"><div class="who"><span class="dot">◆</span>PlainTrade</div>
+    ${renderBrief(brief)}</div>`;
+  inner.appendChild(d); scrollDown();
+}
+
+function scrollDown() { requestAnimationFrame(() => { thread.scrollTop = thread.scrollHeight; }); }
+
+/* ── 交互 ───────────────────────────────────────── */
+async function askAPI(q) {
+  const r = await fetch("/api/ask", {
+    method: "POST", headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({query: q, as_of: $("#asofBadge").dataset.asof || null})
+  });
+  const js = await r.json();
+  if (!js.ok) throw new Error(js.error || "后端返回失败");
+  return js.brief;
+}
+
+async function ask(q) {
+  if (busy || !q.trim()) return;
+  busy = true; sendBtn.disabled = true;
+  const w = document.getElementById("welcome"); if (w) w.style.display = "none";
+  addUser(q.trim());
+  const ph = addThinking(LIVE ? "正在分析" : "载入演示结果");
+  try {
+    let brief;
+    if (LIVE) brief = await askAPI(q);
+    else brief = MOCK[q.trim()] || MOCK["600519 这只怎么样？"];
+    ph.remove(); addAssistant(brief);
+  } catch (e) {
+    ph.remove();
+    const d = document.createElement("div");
+    d.className = "msg ai";
+    d.innerHTML = `<div class="body"><div class="err">后端暂时没响应：${esc(e.message)}</div></div>`;
+    inner.appendChild(d);
+  } finally { busy = false; sendBtn.disabled = input.value.trim() === ""; }
+}
+
+input.addEventListener("input", () => {
+  input.style.height = "auto";
+  input.style.height = Math.min(input.scrollHeight, 140) + "px";
+  sendBtn.disabled = busy || input.value.trim() === "";
+});
+input.addEventListener("keydown", e => {
+  if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); ask(input.value); input.value = ""; }
+});
+sendBtn.addEventListener("click", () => { ask(input.value); input.value = ""; });
+$("#chips").addEventListener("click", e => {
+  const c = e.target.closest(".chip"); if (c) ask(c.dataset.q);
+});
+document.addEventListener("click", e => {
+  const b = e.target.closest(".cites-btn");
+  if (!b) return;
+  const list = b.nextElementSibling;
+  list.classList.toggle("open");
+  b.textContent = (list.classList.contains("open") ? "▾ " : "▸ ") + b.textContent.replace(/^[▸▾]\s*/, "");
+});
+
+/* 演示直达：?ask=1|2|3 自动问一条（截图与录屏用） */
+function autoDemo() {
+  const n = new URLSearchParams(location.search).get("ask");
+  if (!n) return;
+  const qs = Object.keys(MOCK);
+  const q = qs[(parseInt(n, 10) - 1) % qs.length];
+  setTimeout(() => ask(q), 300);
+}
+autoDemo();
+
+/* 启动：从 /api/health 读模式与 as_of；静态模式直接标记 */
+(async () => {
+  if (!LIVE) { $("#modeBadge").textContent = "离线快照"; $("#asofBadge").textContent = "演示数据"; return; }
+  try {
+    const h = await (await fetch("/api/health")).json();
+    $("#modeBadge").textContent = h.mode;
+    $("#asofBadge").textContent = "as_of " + h.as_of;
+    $("#asofBadge").dataset.asof = h.as_of;
+  } catch (e) { $("#modeBadge").textContent = "连接失败"; }
+})();
+</script>
+</body>
+</html>

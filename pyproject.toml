@@ -1,0 +1,31 @@
+[project]
+name = "plantrade"
+version = "0.1.0"
+requires-python = ">=3.11"
+dependencies = [
+  "pydantic>=2.8",
+  "pydantic-settings>=2.2",
+  "requests>=2.31",
+  "pyyaml>=6.0",
+  "jieba>=0.42",
+  "matplotlib>=3.9",
+]
+
+[project.optional-dependencies]
+data   = ["akshare==1.16.98"]        # 备选方案；当前直连东财，不需要
+legacy = ["streamlit>=1.30"]        # 仅 ui/ 旧骨架；正式界面是 FastAPI + 单 HTML
+dev    = ["pytest>=8.0"]
+web  = ["fastapi>=0.110", "uvicorn>=0.29"]
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+py-modules = []
+
+[tool.setuptools.packages.find]
+include = ["config*","contracts*","tools*","llm*","observability*","memory*","data*","research*","agents*","adapt*","guardrails*","pipeline*","ui*","eval*","scripts*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

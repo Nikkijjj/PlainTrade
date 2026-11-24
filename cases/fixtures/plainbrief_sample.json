@@ -1,0 +1,70 @@
+{
+  "_comment": "fixture：完整 PlainBrief（个股场景，含一张回撤图）。A 用它开发 eval 指标，C 用它开发 ui/blocks 渲染。",
+  "task": "stock_outlook",
+  "one_liner": "生意还在增长，但速度慢下来了，现在的价格可能已经把较好的预期算进去了。",
+  "stance_plain": "谨慎偏乐观",
+  "confidence_plain": {
+    "value": "大概六成",
+    "anchor": "六成约等于抛硬币偏一点，不是「很确定」"
+  },
+  "why": [
+    {
+      "point": "去年前三季度收入比前年同期多了 12%，但第三季度的增速比上半年慢了 3 个百分点。",
+      "evidence": ["c1", "c2"],
+      "glossary_id": "g1"
+    },
+    {
+      "point": "现在的价格对应 22 倍市盈率，比它自己过去五年的中间水平要高。",
+      "evidence": ["c4"],
+      "glossary_id": "g2"
+    }
+  ],
+  "charts": [
+    {
+      "spec": {
+        "decision": "emit",
+        "need_type": "risk",
+        "chart_type": "drawdown_curve",
+        "data_ref": "series.close.hfq:2024-01-01..2025-01-03",
+        "annotations": ["max_drawdown=-28%", "as_of=2025-01-03"],
+        "caption": "过去一年它最多跌过 28%——这不是危言耸听，是真实发生过的。",
+        "reason": "结论涉及风险，只给收益不给回撤会让人低估波动。"
+      },
+      "image_path": ""
+    }
+  ],
+  "what_would_change_our_mind": [
+    "下个季度收入增速掉到 5% 以下。",
+    "渠道库存连续两个季度下降超过 15%。"
+  ],
+  "what_you_should_not_do": [
+    "这不是让你买或卖。想下单前先回答一句：这笔钱多久不用？",
+    "不要因为「过去一年跌过 28%」就认为已经便宜——跌幅本身不是便宜的证据。"
+  ],
+  "glossary": [
+    {
+      "id": "g1",
+      "term": "同比",
+      "plain": "和去年同期比",
+      "analogy": "就像拿这次月考和上学期同一次月考比，而不是和上个月比"
+    },
+    {
+      "id": "g2",
+      "term": "市盈率",
+      "plain": "按现在的利润，多少年能赚回你付的价钱",
+      "analogy": "买间铺子，租金越高、回本越快，就越不贵"
+    }
+  ],
+  "citations": [
+    "贵州茅台:2024年第三季度报告 · 披露日 2024-10-26",
+    "财务指标（东财数据中心）· 2024Q3，披露日 2024-10-26",
+    "自算估值 · 2025-01-03：PE 22.0 / PB 7.19"
+  ],
+  "audit": {
+    "run_id": "fixture-0003",
+    "mode": "replay",
+    "jargon_hits": 2,
+    "guardrail_rewrites": 1,
+    "fidelity": "supported"
+  }
+}

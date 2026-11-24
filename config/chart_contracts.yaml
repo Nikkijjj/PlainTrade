@@ -1,0 +1,25 @@
+# 6 类图表契约（数据）。改这里不用改 render.py。
+trend:
+  chart_type: line
+  required: [x_axis_time, y_unit, note_history_not_future]
+  forbidden: [truncated_y_axis, dual_axis]
+compare:
+  chart_type: relative_line
+  required: [baseline_100, legend]
+  forbidden: [dual_y_axis]
+risk:
+  chart_type: drawdown_curve
+  required: [max_drawdown_annotation, date_tick, note_history_not_future]
+  forbidden: [only_return_no_risk]
+allocation:
+  chart_type: stacked_bar
+  required: [watermark_example_only]
+  forbidden: [real_ticker_names, real_ratio]
+attribution:
+  chart_type: bar
+  required: [sector_labels, pct_values]
+  forbidden: [trend_line, forecast]
+no_attribution:
+  chart_type: null
+  required: []
+  forbidden: [any_chart]

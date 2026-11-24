@@ -1,0 +1,15 @@
+* text=auto eol=lf
+
+# 数据库是二进制：不做文本 diff，也不尝试合并（合并必冲突且无解）
+*.db binary -diff -text
+*.db-wal binary -diff -text
+*.db-shm binary -diff -text
+
+# 图片/字体等二进制
+*.png binary
+*.jpg binary
+*.webp binary
+*.ttf binary
+*.ttc binary
+*.docx binary
+*.pdf binary

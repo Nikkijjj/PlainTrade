@@ -1,0 +1,76 @@
+{
+  "_comment": "fixture：事件场景、且归因状态为 unknown —— 这是最容易写错的分支：必须不出图。C 用它测 adapt/chart 的强制 skip。",
+  "task": "market_event",
+  "code": null,
+  "as_of": "2025-01-04",
+  "horizon": "1w",
+  "stance": "no_view",
+  "confidence": 0.0,
+  "claims": [
+    {
+      "id": "c1",
+      "type": "fact",
+      "text": "2025-01-03 创业板指收跌 5.2%，为近 12 个月最大单日跌幅。",
+      "evidence": ["e1"]
+    },
+    {
+      "id": "c2",
+      "type": "fact",
+      "text": "当日成交额为近 20 日均值的 1.8 倍。",
+      "evidence": ["e1"]
+    },
+    {
+      "id": "c3",
+      "type": "fact",
+      "text": "检索当日相关公司公告，未发现重大事项披露。",
+      "evidence": ["e2"]
+    },
+    {
+      "id": "c4",
+      "type": "inference",
+      "text": "媒体报道给出三种互相矛盾的解释，均无官方确认，无法判定主因。",
+      "evidence": ["e3"]
+    }
+  ],
+  "counter_arguments": [],
+  "invalidation_conditions": [
+    "若后续出现官方确认的具体事件（如监管政策落地），则归因状态可升级为 single_cause。"
+  ],
+  "information_gaps": [
+    "缺少全市场当日涨跌家数统计，无法量化下跌的普遍程度。",
+    "新闻仅覆盖近端，无法回溯更早的同类事件做对照。"
+  ],
+  "explanation_status": "unknown",
+  "evidence": [
+    {
+      "id": "e1",
+      "source": "创业板指日线",
+      "doc_type": "market_data",
+      "publish_time": "2025-01-03",
+      "quote": "close=2015.62, pct_chg=-5.20, amount=4.31e11",
+      "url": ""
+    },
+    {
+      "id": "e2",
+      "source": "当日公告检索结果（空）",
+      "doc_type": "announcement",
+      "publish_time": "2025-01-03",
+      "quote": "检索 8 只样本标的，无重大事项公告",
+      "url": ""
+    },
+    {
+      "id": "e3",
+      "source": "新闻检索（近端）",
+      "doc_type": "news",
+      "publish_time": "2025-01-03",
+      "quote": "不同媒体分别归因于流动性、外部市场与行业政策，无一致结论",
+      "url": ""
+    }
+  ],
+  "audit": {
+    "run_id": "fixture-0002",
+    "debate_rounds": 0,
+    "evidence_count": 3,
+    "attribution_attempts": 3
+  }
+}

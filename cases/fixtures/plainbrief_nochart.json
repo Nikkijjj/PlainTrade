@@ -1,0 +1,53 @@
+{
+  "_comment": "fixture：归因不明 → 必须不出图。这是项目最有价值的分支，用来测 render/chart 的强制 skip。",
+  "task": "market_event",
+  "one_liner": "查了当天的公告和新闻，没有找到能解释这次下跌的具体事件。",
+  "stance_plain": "没有明确看法",
+  "confidence_plain": {
+    "value": "没有明确看法",
+    "anchor": "证据不够，我们就不给方向"
+  },
+  "why": [
+    {
+      "point": "当天相关公司没有重大事项公告。",
+      "evidence": ["c3"]
+    },
+    {
+      "point": "媒体报道给出三种互相矛盾的解释，都没有官方确认。",
+      "evidence": ["c4"]
+    }
+  ],
+  "charts": [
+    {
+      "spec": {
+        "decision": "skip",
+        "need_type": "no_attribution",
+        "chart_type": null,
+        "data_ref": "",
+        "annotations": [],
+        "caption": "",
+        "reason": "归因状态为 unknown，出图会让用户误以为已经知道原因（视觉过度归因）。"
+      },
+      "image_path": ""
+    }
+  ],
+  "what_would_change_our_mind": [
+    "若出现官方确认的具体事件（如政策落地），归因状态可升级为单一原因。"
+  ],
+  "what_you_should_not_do": [
+    "不要在没弄清原因时因为恐慌而操作。",
+    "不要把「大家都在跌」当成抄底理由。"
+  ],
+  "glossary": [],
+  "citations": [
+    "创业板指日线 · 2025-01-03：−5.2%",
+    "公告检索 · 当日无重大事项公告",
+    "新闻检索（近端）· 3 条报道 3 种解释"
+  ],
+  "audit": {
+    "run_id": "fixture-0004",
+    "mode": "replay",
+    "explanation_status": "unknown",
+    "chart_forced_skip": true
+  }
+}
