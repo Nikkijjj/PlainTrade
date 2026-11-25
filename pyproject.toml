@@ -6,16 +6,19 @@ dependencies = [
   "pydantic>=2.8",
   "pydantic-settings>=2.2",
   "requests>=2.31",
+  "pandas>=2.0",
   "pyyaml>=6.0",
   "jieba>=0.42",
   "matplotlib>=3.9",
+  "numpy<2",
+  "fastapi>=0.110",
+  "uvicorn>=0.29",
 ]
 
 [project.optional-dependencies]
-data   = ["akshare==1.16.98"]        # 备选方案；当前直连东财，不需要
+data   = ["akshare==1.16.98", "PyMuPDF>=1.24"]   # 备选数据源 / 巨潮 PDF 正文
 legacy = ["streamlit>=1.30"]        # 仅 ui/ 旧骨架；正式界面是 FastAPI + 单 HTML
 dev    = ["pytest>=8.0"]
-web  = ["fastapi>=0.110", "uvicorn>=0.29"]
 
 [build-system]
 requires = ["setuptools>=68"]
