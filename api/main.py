@@ -9,11 +9,14 @@
 from __future__ import annotations
 
 import base64
+import json as _json
+import queue as _queue
+import threading as _threading
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 from fastapi import FastAPI  # type: ignore[import-not-found]
-from fastapi.responses import FileResponse, JSONResponse  # type: ignore[import-not-found]
+from fastapi.responses import FileResponse, JSONResponse, StreamingResponse  # type: ignore[import-not-found]
 from fastapi.staticfiles import StaticFiles  # type: ignore[import-not-found]
 from pydantic import BaseModel  # type: ignore[import-not-found]
 
@@ -99,6 +102,45 @@ def ask(req: AskRequest):
     except Exception as e:                                  # noqa: BLE001
         return JSONResponse({"ok": False, "error": f"{type(e).__name__}: {e}"},
                             status_code=500)
+
+
+@app.post("/api/ask/stream")
+def ask_stream(req: AskRequest):
+    """流式：NDJSON，每行一个事件。
+
+    事件类型：
+      {"type":"stage","stage":"router","label":"正在理解你的问题…"}  ← 进度
+      {"type":"brief","ok":true,"brief":{...},"as_of":...}            ← 最终结果
+      {"type":"error","error":"..."}
+    """
+    as_of = req.as_of or _now_as_of()
+    q: "_queue.Queue" = _queue.Queue()
+
+    def _worker() -> None:
+        def on_event(evt: dict) -> None:
+            q.put(evt)
+        try:
+            from pipeline.run import run                   # 延迟导入
+            brief = run(req.query, as_of=as_of, on_event=on_event)
+            _inline_images(brief)
+            q.put({"type": "brief", "ok": True,
+                   "brief": brief.model_dump(mode="json"),
+                   "as_of": as_of, "mode": settings.mode})
+        except Exception as e:                              # noqa: BLE001
+            q.put({"type": "error", "error": f"{type(e).__name__}: {e}"})
+        finally:
+            q.put(None)                                     # 哨兵
+
+    _threading.Thread(target=_worker, daemon=True).start()
+
+    def gen():
+        while True:
+            item = q.get()
+            if item is None:
+                break
+            yield _json.dumps(item, ensure_ascii=False) + "\n"
+
+    return StreamingResponse(gen(), media_type="application/x-ndjson")
 
 
 @app.get("/")

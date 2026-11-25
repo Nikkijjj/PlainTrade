@@ -145,8 +145,8 @@ def check_lines(problems: list[str]) -> None:
 def check_prompts(problems: list[str]) -> None:
     pdir = ROOT / "config" / "prompts"
     files = sorted(pdir.glob("*.md"))
-    if len(files) != 13:
-        fail(problems, f"prompts 应为 13 个，实际 {len(files)}")
+    if len(files) != 14:
+        fail(problems, f"prompts 应为 14 个，实际 {len(files)}")
     for f in files:
         text = f.read_text(encoding="utf-8")
         if not text.lstrip().startswith("<!--"):
