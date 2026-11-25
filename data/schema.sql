@@ -37,8 +37,23 @@ CREATE INDEX IF NOT EXISTS idx_fin ON financials(code, announce_date);
 CREATE TABLE IF NOT EXISTS announcements (
   art_code TEXT PRIMARY KEY, code TEXT NOT NULL, title TEXT NOT NULL,
   notice_date TEXT NOT NULL, publish_time TEXT NOT NULL, doc_type TEXT, url TEXT,
-  content TEXT, content_len INTEGER, ingested_at TEXT NOT NULL);
+  content TEXT, content_len INTEGER, ingested_at TEXT NOT NULL,
+  pdf_url TEXT, page_count INTEGER, parse_status TEXT);
 CREATE INDEX IF NOT EXISTS idx_ann ON announcements(code, publish_time);
+
+-- 公告正文（巨潮 PDF）：文档级元数据 + 分块
+CREATE TABLE IF NOT EXISTS doc_meta (
+  doc_id TEXT PRIMARY KEY, company TEXT, report_period TEXT, publish_date TEXT,
+  pdf_url TEXT, page_count INTEGER, pdf_sha256 TEXT,
+  parser TEXT, parse_status TEXT);
+
+CREATE TABLE IF NOT EXISTS doc_chunks (
+  doc_id TEXT NOT NULL, seq INTEGER NOT NULL, page INTEGER,
+  section TEXT, kind TEXT DEFAULT 'text', text TEXT NOT NULL,
+  PRIMARY KEY (doc_id, seq));
+
+CREATE VIRTUAL TABLE IF NOT EXISTS chunks_fts USING fts5(
+  doc_id UNINDEXED, page UNINDEXED, section, text, tokenize='unicode61');
 
 CREATE TABLE IF NOT EXISTS news (
   url TEXT PRIMARY KEY, time TEXT NOT NULL, title TEXT NOT NULL, summary TEXT,

@@ -52,13 +52,23 @@ def collect(db: Path) -> dict:
             span[table] = [None, None]
     with_body = c.execute(
         "SELECT count(*) FROM announcements WHERE content_len > 0").fetchone()[0]
+    # 财报类（T1：年报/半年报/季报/分红）是证据链的主体，按覆盖率判断缺口
+    fin_total = c.execute(
+        "SELECT count(*) FROM announcements WHERE doc_type IN ('年报','半年报','季报','分红')"
+    ).fetchone()[0]
+    fin_body = c.execute(
+        "SELECT count(*) FROM announcements WHERE doc_type IN ('年报','半年报','季报','分红')"
+        " AND content_len > 0").fetchone()[0]
     c.close()
 
     gaps = []
-    if with_body == 0:
-        gaps.append("公告正文 0 条：Evidence.quote 只能用标题，保真度判定会偏宽松")
-    elif with_body < counts["announcements"]:
-        gaps.append(f"公告正文仅 {with_body}/{counts['announcements']} 条")
+    fin_rate = fin_body / fin_total if fin_total else 0.0
+    if fin_rate < 0.7:
+        gaps.append(f"财报类正文 {fin_body}/{fin_total}（{fin_rate:.0%}），"
+                    "Evidence.quote 大多只能用标题，保真度判定会偏宽松")
+    else:
+        gaps.append(f"财报类正文 {fin_body}/{fin_total}（{fin_rate:.0%}）；"
+                    "其余「其他」类标题不补全文（低价值，按设计）")
     if counts["board_daily"] == 0:
         gaps.append("板块 0 行：market_event 的板块图没数据（chart.plan 须降级为 skip）")
     if counts["news"] == 0:

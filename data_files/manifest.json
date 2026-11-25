@@ -1,8 +1,8 @@
 {
-  "generated_at": "2026-11-23T23:45:37+08:00",
+  "generated_at": "2026-11-25T19:19:33+08:00",
   "db_file": "plantrade.db",
-  "sha256": "e92436e4af9a060c23a8298d469af45b648024fb27a6a013440093c0e04c2f34",
-  "size_mb": 3.92,
+  "sha256": "7b3a8b4846304b705ae49321007b4696e06bf25aa4a9e0727d9b27db643f03b8",
+  "size_mb": 54.98,
   "window": {
     "start": "2023-01-01",
     "end": "2025-06-30"
@@ -13,11 +13,11 @@
     "index_daily": 1202,
     "announcements": 2816,
     "financials": 800,
-    "boards": 0,
-    "board_daily": 0,
-    "board_members": 0,
+    "boards": 8,
+    "board_daily": 4808,
+    "board_members": 340,
     "news": 0,
-    "docs_fts": 2816
+    "docs_fts": 2873
   },
   "date_span": {
     "prices_daily": [
@@ -33,14 +33,13 @@
       "2025-06-28"
     ],
     "board_daily": [
-      null,
-      null
+      "2023-01-03",
+      "2025-06-30"
     ]
   },
-  "announcements_with_body": 0,
+  "announcements_with_body": 335,
   "known_gaps": [
-    "公告正文 0 条：Evidence.quote 只能用标题，保真度判定会偏宽松",
-    "板块 0 行：market_event 的板块图没数据（chart.plan 须降级为 skip）",
+    "财报类正文 183/196（93%）；其余「其他」类标题不补全文（低价值，按设计）",
     "新闻 0 条：回放模式下正常（新闻不可回溯），live 模式会抓"
   ],
   "note": "这是开发期的半成品快照，数据冻结后会用同名文件覆盖并更新 sha256"
