@@ -1,4 +1,4 @@
-"""三个问题模板：入口只是问题模板，共用一条管线。"""
+"""四个问题模板：入口只是问题模板，共用一条管线。"""
 from __future__ import annotations
 
 from dataclasses import dataclass, field
@@ -28,4 +28,10 @@ TASKS = {
         task="allocation_literacy", label="钱怎么放",
         example="我手上有 10 万，该怎么分配？",
         needs_docs=False, needs_financials=False, chart_hint="allocation"),
+    # chit_chat：寒暄 + 通用知识。不取数、不调分析师，pipeline 里直接走轻量回应分支
+    "chit_chat": TaskTemplate(
+        task="chit_chat", label="寒暄/通用",
+        example="你好 / 珠穆朗玛峰多高？",
+        needs_docs=False, needs_financials=False, needs_signals=False,
+        chart_hint="none"),
 }

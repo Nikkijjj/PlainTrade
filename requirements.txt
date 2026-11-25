@@ -1,0 +1,22 @@
+# PlainTrade dependencies
+# Install: python -m venv .venv && .venv\Scripts\activate && pip install -r requirements.txt
+
+# --- core (runtime + data build) ---
+pydantic>=2.8
+pydantic-settings>=2.2
+requests>=2.31
+pandas>=2.0
+pyyaml>=6.0
+jieba>=0.42
+matplotlib>=3.9
+numpy<2
+
+# --- web UI (FastAPI + single HTML) ---
+fastapi>=0.110
+uvicorn>=0.29
+
+# --- announcement full text (cninfo PDF, build-time only) ---
+PyMuPDF>=1.24
+
+# --- tests ---
+pytest>=8.0

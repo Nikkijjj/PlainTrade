@@ -16,3 +16,4 @@ dist/
 _*.py
 data_files/_pytest/
 data_files/_lock/
+.vscode/
