@@ -268,14 +268,37 @@ function addAssistant(brief) {
 function scrollDown() { requestAnimationFrame(() => { thread.scrollTop = thread.scrollHeight; }); }
 
 /* ── 交互 ───────────────────────────────────────── */
-async function askAPI(q) {
-  const r = await fetch("/api/ask", {
+function updateThinking(el, label) {
+  const span = el.querySelector(".thinking span:last-child");
+  if (span) span.textContent = label + "…";
+  scrollDown();
+}
+
+async function askStream(q, onStage) {
+  const r = await fetch("/api/ask/stream", {
     method: "POST", headers: {"Content-Type": "application/json"},
     body: JSON.stringify({query: q, as_of: $("#asofBadge").dataset.asof || null})
   });
-  const js = await r.json();
-  if (!js.ok) throw new Error(js.error || "后端返回失败");
-  return js.brief;
+  if (!r.ok || !r.body) throw new Error("后端返回失败 " + r.status);
+  const reader = r.body.getReader();
+  const dec = new TextDecoder();
+  let buf = "";
+  while (true) {
+    const {done, value} = await reader.read();
+    if (done) break;
+    buf += dec.decode(value, {stream: true});
+    let i;
+    while ((i = buf.indexOf("\n")) >= 0) {
+      const line = buf.slice(0, i).trim();
+      buf = buf.slice(i + 1);
+      if (!line) continue;
+      const evt = JSON.parse(line);
+      if (evt.type === "stage") onStage(evt.label);
+      else if (evt.type === "brief") return evt.brief;
+      else if (evt.type === "error") throw new Error(evt.error || "后端错误");
+    }
+  }
+  throw new Error("流中断，没有拿到结果");
 }
 
 async function ask(q) {
@@ -283,10 +306,10 @@ async function ask(q) {
   busy = true; sendBtn.disabled = true;
   const w = document.getElementById("welcome"); if (w) w.style.display = "none";
   addUser(q.trim());
-  const ph = addThinking(LIVE ? "正在分析" : "载入演示结果");
+  const ph = addThinking(LIVE ? "正在理解你的问题" : "载入演示结果");
   try {
     let brief;
-    if (LIVE) brief = await askAPI(q);
+    if (LIVE) brief = await askStream(q.trim(), (label) => updateThinking(ph, label));
     else brief = MOCK[q.trim()] || MOCK["600519 这只怎么样？"];
     ph.remove(); addAssistant(brief);
   } catch (e) {
