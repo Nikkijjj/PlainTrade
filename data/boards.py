@@ -46,12 +46,22 @@ def _match(all_boards: list[dict], industries: set[str]) -> list[dict]:
     所以只允许 板块名 以 行业名 开头/结尾，且排除「其他XX」这类兜底板块。
     """
     picked: list[dict] = []
-    seen: set[str] = set()
+    seen: set[str] = set()        # 已选板的 board_code
+    seen_names: set[str] = set()  # 已选板的规范化名称（去重用）
 
     def add(b: dict) -> None:
-        if b["board_code"] not in seen:
-            picked.append(b)
-            seen.add(b["board_code"])
+        """按 board_code 和规范化名称双重去重。
+
+        东财同时存在「银行」和「银行Ⅱ」这类同成分板块（成分股票完全相同、
+        涨跌幅也相同）。不去重的话，事件场景的柱状图会出现两根一模一样的柱子，
+        既占版面又误导（看图像是"两个板块在跌"）。
+        """
+        key = _norm(b["board_name"])
+        if b["board_code"] in seen or key in seen_names:
+            return
+        picked.append(b)
+        seen.add(b["board_code"])
+        seen_names.add(key)
 
     wants = [w for w in (_norm(i) for i in industries) if w]
     # ① 精确

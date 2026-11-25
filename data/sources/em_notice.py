@@ -64,12 +64,20 @@ def fetch_content(sess: requests.Session, art_code: str) -> str:
 
 
 def classify(title: str) -> str:
+    """公告标题 → 类型。**顺序很关键**，见下。
+
+    坑（实测）：`半年度报告` 含子串 `年度报告`，`半年报` 含子串 `年报`，
+    若先判 `年度报告|年报` 会把半年报全误判成"年报"，导致分层/优先级错乱。
+    所以：半年度/中期 必须最先判；摘要、英文版单独归"其他"（正文层再过滤，不参与全文补数）。
+    """
+    if re.search(r"半年度报告|半年报|中期报告", title):
+        return "半年报"
+    if re.search(r"摘要", title) or re.search(r"英文", title):
+        return "其他"                    # 摘要/英文版不要全文，别和正文混
     if re.search(r"年度报告|年报", title):
         return "年报"
     if re.search(r"季度报告|季报", title):
         return "季报"
-    if re.search(r"半年度报告", title):
-        return "半年报"
-    if re.search(r"分红|利润分配", title):
+    if re.search(r"分红|利润分配|权益分派", title):
         return "分红"
     return "其他"
